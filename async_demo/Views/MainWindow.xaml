@@ -1,0 +1,35 @@
+﻿<Window x:Class="async.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:async.ViewModels"
+        mc:Ignorable="d"
+        Title="Asyn Demo App" 
+        Height="600" 
+        Width="900">
+    <Window.Resources>
+        <vm:NormalViewModel x:Key="nvm"/>
+        <vm:AsyncViewModel x:Key="avm"/>
+        <vm:ParallelAsyncViewModel x:Key="pavm"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ContentPresenter Content="{StaticResource nvm}"
+                          ContentTemplate="{StaticResource ViewTemplate}"
+                          Grid.Column="0"
+                          />
+        <ContentPresenter Content="{StaticResource avm}"
+                          ContentTemplate="{StaticResource ViewTemplate}"
+                          Grid.Column="1"
+                          />
+        <ContentPresenter Content="{StaticResource pavm}"
+                          ContentTemplate="{StaticResource ViewTemplate}"
+                          Grid.Column="2"
+                          />
+    </Grid>
+</Window>
