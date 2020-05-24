@@ -6,13 +6,21 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace async.ViewModels
 {
-    public class NormalViewModel : ObservableObject, IBaseViewModel
+    public class AsyncParallelForeachViewModel : ObservableObject, IBaseViewModel
     {
         private CancellationTokenSource cancellationToken;
+
+        public CancellationTokenSource cts
+        {
+            get => cancellationToken;
+            set => SetProperty(ref cancellationToken, value);
+        }
+
         private string title;
 
         public string Title
@@ -39,44 +47,47 @@ namespace async.ViewModels
 
         public ObservableCollection<WebsiteData> WebsiteDatas { get; set; }
 
-        public ICommand GetDataCommand => new RelayCommand(prop => GetData(prop), cp => cancellationToken == null);
+        public ICommand GetDataCommand => new RelayCommand(async prop => await GetData(prop), cp => cts == null);
 
-        public ICommand CancelCommand => new RelayCommand(prop => Cancel(prop), cp => cancellationToken != null);
+        public ICommand CancelCommand => new RelayCommand(prop => Cancel(prop), cp => cts != null);
 
         private void Cancel(object prop)
         {
-            cancellationToken.Cancel();
+            cts.Cancel();
         }
 
-        private void GetData(object prop)
+        public AsyncParallelForeachViewModel()
         {
-            cancellationToken = new CancellationTokenSource();
+            Title = "Async Parallel.Foreach";
+            WebSites.FillCollection(this);
+        }
+
+        private async Task GetData(object prop)
+        {
+            cts = new CancellationTokenSource();
             Stopwatch topwatch = Stopwatch.StartNew();
             int i = 1;
-
             try
             {
-                foreach (WebsiteData s in WebsiteDatas)
+                await Task.Run(() =>
                 {
-                    WebSites.Download(s, cancellationToken.Token);
-                    PercentageCompleted = (i * 100) / WebsiteDatas.Count;
-                    i++;
-                }
+                    Parallel.ForEach<WebsiteData>(WebsiteDatas, (s) =>
+                    {
+                        WebSites.Download(s, cts.Token);
+                        PercentageCompleted = (i * 100) / WebsiteDatas.Count;
+                        i++;
+                    });
+                });
             }
             catch (OperationCanceledException)
             {
                 //Do nothing
             }
-            
-            topwatch.Stop();
-            TotalTime = topwatch.ElapsedMilliseconds;
-            cancellationToken = null;
-        }
 
-        public NormalViewModel()
-        {
-            Title = "Normal";
-            WebSites.FillCollection(this);
+            topwatch.Stop();
+
+            TotalTime = topwatch.ElapsedMilliseconds;
+            cts = null;
         }
     }
 }

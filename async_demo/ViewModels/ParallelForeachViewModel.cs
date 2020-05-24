@@ -6,13 +6,15 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace async.ViewModels
 {
-    public class NormalViewModel : ObservableObject, IBaseViewModel
+    public class ParallelForeachViewModel : ObservableObject, IBaseViewModel
     {
         private CancellationTokenSource cancellationToken;
+
         private string title;
 
         public string Title
@@ -48,35 +50,36 @@ namespace async.ViewModels
             cancellationToken.Cancel();
         }
 
+        public ParallelForeachViewModel()
+        {
+            Title = "Parallel.Foreach";
+            WebSites.FillCollection(this);
+        }
+
         private void GetData(object prop)
         {
+            PercentageCompleted = 0;
             cancellationToken = new CancellationTokenSource();
             Stopwatch topwatch = Stopwatch.StartNew();
             int i = 1;
 
             try
             {
-                foreach (WebsiteData s in WebsiteDatas)
+                Parallel.ForEach<WebsiteData>(WebsiteDatas, (s) =>
                 {
                     WebSites.Download(s, cancellationToken.Token);
                     PercentageCompleted = (i * 100) / WebsiteDatas.Count;
                     i++;
-                }
+                });
             }
             catch (OperationCanceledException)
             {
                 //Do nothing
             }
-            
+
             topwatch.Stop();
             TotalTime = topwatch.ElapsedMilliseconds;
             cancellationToken = null;
-        }
-
-        public NormalViewModel()
-        {
-            Title = "Normal";
-            WebSites.FillCollection(this);
         }
     }
 }

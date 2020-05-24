@@ -11,25 +11,34 @@
     <Window.Resources>
         <vm:NormalViewModel x:Key="nvm"/>
         <vm:AsyncViewModel x:Key="avm"/>
-        <vm:ParallelAsyncViewModel x:Key="pavm"/>
+        <vm:AsyncParallelViewModel x:Key="pavm"/>
+        <vm:ParallelForeachViewModel x:Key="pfvm"/>
+        <vm:AsyncParallelForeachViewModel x:Key="apfvm"/>
     </Window.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <ContentPresenter Content="{StaticResource nvm}"
-                          ContentTemplate="{StaticResource ViewTemplate}"
-                          Grid.Column="0"
-                          />
-        <ContentPresenter Content="{StaticResource avm}"
-                          ContentTemplate="{StaticResource ViewTemplate}"
-                          Grid.Column="1"
-                          />
-        <ContentPresenter Content="{StaticResource pavm}"
-                          ContentTemplate="{StaticResource ViewTemplate}"
-                          Grid.Column="2"
-                          />
-    </Grid>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto">
+        <DockPanel LastChildFill="False"
+                   HorizontalAlignment="Center">
+            <ContentPresenter Content="{StaticResource nvm}"
+                              ContentTemplate="{StaticResource ViewTemplate}"
+                              DockPanel.Dock="Left"
+                              />
+            <ContentPresenter Content="{StaticResource avm}"
+                              ContentTemplate="{StaticResource ViewTemplate}"
+                              DockPanel.Dock="Left"
+                              />
+            <ContentPresenter Content="{StaticResource pavm}"
+                              ContentTemplate="{StaticResource ViewTemplate}"
+                              DockPanel.Dock="Left"
+                              />        
+            <ContentPresenter Content="{StaticResource pfvm}"
+                              ContentTemplate="{StaticResource ViewTemplate}"
+                              DockPanel.Dock="Left"
+                              />        
+            <ContentPresenter Content="{StaticResource apfvm}"
+                              ContentTemplate="{StaticResource ViewTemplate}"
+                              DockPanel.Dock="Left"
+                              />
+        </DockPanel>
+    </ScrollViewer>
 </Window>

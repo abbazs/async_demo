@@ -13,7 +13,7 @@ namespace async.ViewModels
 {
     public class AsyncViewModel : ObservableObject, IBaseViewModel
     {
-        private CancellationTokenSource cancellationToken = new CancellationTokenSource();
+        private CancellationTokenSource cancellationToken;
 
         private string title;
 
@@ -41,9 +41,9 @@ namespace async.ViewModels
 
         public ObservableCollection<WebsiteData> WebsiteDatas { get; set; }
 
-        public ICommand GetDataCommand => new RelayCommand(async prop => await GetData(prop));
+        public ICommand GetDataCommand => new RelayCommand(async prop => await GetData(prop), cp => cancellationToken == null);
 
-        public ICommand CancelCommand => new RelayCommand(prop => Cancel(prop));
+        public ICommand CancelCommand => new RelayCommand(prop => Cancel(prop), cp => cancellationToken != null);
 
         private void Cancel(object prop)
         {
@@ -58,6 +58,7 @@ namespace async.ViewModels
 
         private async Task GetData(object prop)
         {
+            cancellationToken = new CancellationTokenSource();
             Stopwatch topwatch = Stopwatch.StartNew();
             int i = 1;
             try
@@ -77,6 +78,7 @@ namespace async.ViewModels
             topwatch.Stop();
 
             TotalTime = topwatch.ElapsedMilliseconds;
+            cancellationToken = null;
         }
     }
 }

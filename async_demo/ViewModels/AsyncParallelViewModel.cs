@@ -12,9 +12,9 @@ using System.Windows.Input;
 
 namespace async.ViewModels
 {
-    public class ParallelAsyncViewModel : ObservableObject, IBaseViewModel
+    public class AsyncParallelViewModel : ObservableObject, IBaseViewModel
     {
-        CancellationTokenSource cancellationToken = new CancellationTokenSource();
+        CancellationTokenSource cancellationToken;
 
         private string title;
 
@@ -44,9 +44,9 @@ namespace async.ViewModels
 
         public ObservableCollection<WebsiteData> WebsiteDatas { get; set; }
 
-        public ICommand GetDataCommand => new RelayCommand(async prop => await GetData(prop));
+        public ICommand GetDataCommand => new RelayCommand(async prop => await GetData(prop), cp => cancellationToken == null);
 
-        public ICommand CancelCommand => new RelayCommand(prop => Cancel(prop));
+        public ICommand CancelCommand => new RelayCommand(prop => Cancel(prop), cp => cancellationToken != null);
 
         private void Cancel(object prop)
         {
@@ -55,6 +55,7 @@ namespace async.ViewModels
 
         private async Task GetData(object prop)
         {
+            cancellationToken = new CancellationTokenSource();
             Stopwatch topwatch = Stopwatch.StartNew();
             List<Task> tasks = new List<Task>();
             counter = 1;
@@ -72,8 +73,9 @@ namespace async.ViewModels
             {
                 // Do nothing
             }
-
+            
             TotalTime = topwatch.ElapsedMilliseconds;
+            cancellationToken = null;
         }
 
         private void ParallelDownload(WebsiteData s)
@@ -83,9 +85,9 @@ namespace async.ViewModels
             counter++;
         }
 
-        public ParallelAsyncViewModel()
+        public AsyncParallelViewModel()
         {
-            Title = "Parallel";
+            Title = "Async Parallel";
             WebSites.FillCollection(this);
         }   
     }
