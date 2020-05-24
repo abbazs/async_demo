@@ -30,5 +30,13 @@ namespace async.Models
             get { return timeTaken; }
             set => SetProperty(ref timeTaken, value);
         }
+
+        private string status;
+
+        public string Status
+        {
+            get => status;
+            set => SetProperty(ref status, value);
+        }
     }
 }

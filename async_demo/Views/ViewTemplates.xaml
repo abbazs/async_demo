@@ -21,17 +21,31 @@
                   BorderThickness="1"
                   Margin="2"
                   Padding="2">
-            <DockPanel LastChildFill="True">
+            <DockPanel LastChildFill="False">
+                <DockPanel DockPanel.Dock="Top"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
             <Button x:Name="executeSync"
-                    DockPanel.Dock="Top"
+                    DockPanel.Dock="Left"
                     Command="{Binding GetDataCommand}"
-                    Margin="10"
-                    Padding="10"
+                    Margin="2"
+                    Padding="2"
                     Content="Get Data"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Height="Auto"
                     />
+                    <Button 
+                    DockPanel.Dock="Left"
+                    Command="{Binding CancelCommand}"
+                    Margin="2"
+                    Padding="2"
+                    Content="Cancel"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Height="Auto"
+                    />
+                </DockPanel>
                 <TextBlock DockPanel.Dock="Top"
                            Margin="10"
                            Padding="10"
@@ -49,6 +63,7 @@
                       ItemsSource="{Binding WebsiteDatas}"
                       IsReadOnly="True"
                       HorizontalAlignment="Center"
+                      DockPanel.Dock="Top"
                       >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Web site"
@@ -67,8 +82,27 @@
                                     ElementStyle="{DynamicResource DataGridElementStyle}"
                                     />
                 </DataGrid.Columns>
-            </DataGrid>
-        </DockPanel>
+               </DataGrid>
+                <Grid DockPanel.Dock="Bottom"
+                      Margin="0, 2">
+                    <ProgressBar Value="{Binding PercentageCompleted}" 
+                                 x:Name="pb1"
+                                 Height="24"  
+                                 Foreground="#FF62FF7F"/>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}Completed : {0}%/{1}%">
+                                <Binding Path="Value" ElementName="pb1" />
+                                <Binding Path="Maximum" ElementName="pb1" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+                <ProgressBar Value="{Binding PercentageCompleted}"
+                             DockPanel.Dock="Bottom"
+                             Height="20"
+                             Margin="0, 2"/>
+            </DockPanel>
         </GroupBox>
     </DataTemplate>
 </ResourceDictionary>
