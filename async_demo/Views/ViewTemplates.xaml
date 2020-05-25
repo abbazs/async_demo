@@ -15,17 +15,87 @@
                    FontFamily="Calibri" 
                    Text="{Binding}"/>
     </DataTemplate>
+    <DataTemplate x:Key="ResultsTemplate">
+        <Border BorderBrush="LightGray"
+                BorderThickness="1"
+                >
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top"
+                               Margin="2"
+                               Padding="2"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                        >
+                        <Run Text="Total time : "
+                             FontWeight="Bold"
+                             />
+                        <Run Text="{Binding TotalTime}"
+                             FontWeight="Bold"
+                             />
+                </TextBlock>
+                <Button Content="Cancel"
+                        Command="{Binding CancelCommand}"
+                        Margin="2"
+                        Padding="2"
+                        DockPanel.Dock="Top"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        />
+                <DataGrid AutoGenerateColumns="False"
+                          ItemsSource="{Binding ResultDatas}"
+                          IsReadOnly="True"
+                          HorizontalAlignment="Center"
+                          DockPanel.Dock="Top"
+                          Margin="2"
+                          Padding="2"
+                          >
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Web site"
+                                        Binding="{Binding Url}"
+                                        HeaderStyle="{DynamicResource DataGridTextColumnHeaderStyleBold}"
+                                        ElementStyle="{DynamicResource DataGridElementStyle}"
+                                        />
+                        <DataGridTextColumn Header="Data length"
+                                        Binding="{Binding DataLength}"
+                                        HeaderStyle="{DynamicResource DataGridTextColumnHeaderStyleBold}"
+                                        ElementStyle="{DynamicResource DataGridElementStyle}"
+                                        />
+                        <DataGridTextColumn Header="Time taken"
+                                        Binding="{Binding TimeTaken}"
+                                        HeaderStyle="{DynamicResource DataGridTextColumnHeaderStyleBold}"
+                                        ElementStyle="{DynamicResource DataGridElementStyle}"
+                                        />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Grid DockPanel.Dock="Top"
+                          Margin="0, 2">
+                    <ProgressBar Value="{Binding PercentageCompleted}" 
+                                     x:Name="pb1"
+                                     Height="24"  
+                                     Foreground="#FF62FF7F"/>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}Completed : {0}/{1}">
+                                <Binding Path="Value" ElementName="pb1" />
+                                <Binding Path="Maximum" ElementName="pb1" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+            </DockPanel>
+        </Border>
+    </DataTemplate>
     <DataTemplate x:Key="ViewTemplate">
         <GroupBox HeaderTemplate="{DynamicResource GroupBoxHeaderTemplateBold}" Header="{Binding Title}"
                   BorderBrush="LightGray"
                   BorderThickness="1"
-                  Margin="2"
-                  Padding="2">
-            <DockPanel LastChildFill="False">
+                  >
+            <DockPanel LastChildFill="False"
+                       HorizontalAlignment="Center">
                 <DockPanel DockPanel.Dock="Top"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center">
-            <Button x:Name="executeSync"
+                    <Button x:Name="executeSync"
                     DockPanel.Dock="Left"
                     Command="{Binding GetDataCommand}"
                     Margin="2"
@@ -37,71 +107,39 @@
                     />
                     <Button 
                     DockPanel.Dock="Left"
-                    Command="{Binding CancelCommand}"
+                    Command="{Binding StopAllCommand}"
                     Margin="2"
                     Padding="2"
-                    Content="Cancel"
+                    Content="Stop All"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Height="Auto"
+                    />
+                    <Button 
+                    DockPanel.Dock="Left"
+                    Command="{Binding ClearResultsCommand}"
+                    Margin="2"
+                    Padding="2"
+                    Content="Clear Results"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Height="Auto"
                     />
                 </DockPanel>
-                <TextBlock DockPanel.Dock="Top"
-                           Margin="10"
-                           Padding="10"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                    >
-                    <Run Text="Total time : "
-                         FontWeight="Bold"
-                         />
-                    <Run Text="{Binding TotalTime}"
-                         FontWeight="Bold"
-                         />
-                </TextBlock>
-            <DataGrid AutoGenerateColumns="False"
-                      ItemsSource="{Binding WebsiteDatas}"
-                      IsReadOnly="True"
-                      HorizontalAlignment="Center"
-                      DockPanel.Dock="Top"
-                      >
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Web site"
-                                    Binding="{Binding WebsiteUrl}"
-                                    HeaderStyle="{DynamicResource DataGridTextColumnHeaderStyleBold}"
-                                    ElementStyle="{DynamicResource DataGridElementStyle}"
-                                    />
-                    <DataGridTextColumn Header="Data length"
-                                    Binding="{Binding DataLength}"
-                                    HeaderStyle="{DynamicResource DataGridTextColumnHeaderStyleBold}"
-                                    ElementStyle="{DynamicResource DataGridElementStyle}"
-                                    />                    
-                    <DataGridTextColumn Header="Time taken"
-                                    Binding="{Binding TimeTaken}"
-                                    HeaderStyle="{DynamicResource DataGridTextColumnHeaderStyleBold}"
-                                    ElementStyle="{DynamicResource DataGridElementStyle}"
-                                    />
-                </DataGrid.Columns>
-               </DataGrid>
-                <Grid DockPanel.Dock="Bottom"
-                      Margin="0, 2">
-                    <ProgressBar Value="{Binding PercentageCompleted}" 
-                                 x:Name="pb1"
-                                 Height="24"  
-                                 Foreground="#FF62FF7F"/>
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock.Text>
-                            <MultiBinding StringFormat="{}Completed : {0}%/{1}%">
-                                <Binding Path="Value" ElementName="pb1" />
-                                <Binding Path="Maximum" ElementName="pb1" />
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
-                </Grid>
-                <ProgressBar Value="{Binding PercentageCompleted}"
-                             DockPanel.Dock="Bottom"
-                             Height="20"
-                             Margin="0, 2"/>
+                <ListView ItemsSource="{Binding Urls}"
+                          DockPanel.Dock="Top"
+                          HorizontalAlignment="Stretch"
+                          />
+                <GroupBox Header="Results"
+                          HorizontalAlignment="Center"
+                          DockPanel.Dock="Top">
+                    <ListView ItemsSource="{Binding ResultDataViewModels}"
+                              ItemTemplate="{DynamicResource ResultsTemplate}"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              BorderThickness="0"
+                              />
+                </GroupBox>
             </DockPanel>
         </GroupBox>
     </DataTemplate>

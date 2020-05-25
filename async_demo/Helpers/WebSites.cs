@@ -1,5 +1,7 @@
 ﻿using async.Models;
+using async.ViewModels;
 using async.ViewModels.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -22,24 +24,36 @@ namespace async.Helpers
 
         public static void FillCollection(IBaseViewModel baseViewModel)
         {
-            baseViewModel.WebsiteDatas = new ObservableCollection<WebsiteData>();
+            baseViewModel.Urls = new ObservableCollection<string>();
             foreach (var s in WebSites.Sites)
             {
-                baseViewModel.WebsiteDatas.Add(new WebsiteData() { WebsiteUrl = s });
+                baseViewModel.Urls.Add(s);
             }
         }
 
-        public static void Download(WebsiteData s, CancellationToken token)
+        public static void Download(IProgress<ResultData> r, string s, CancellationToken token)
         {
             Stopwatch watch = Stopwatch.StartNew();
+            ResultData resultData = new ResultData();
             using (WebClient client = new WebClient())
             {
-                s.WebSiteData = client.DownloadString(s.WebsiteUrl);
-                token.ThrowIfCancellationRequested();
+                resultData.Url = s;
+                try
+                {
+                    string data = client.DownloadString(s);
+                    token.ThrowIfCancellationRequested();
+                    resultData.DataLength = data.Length;
+                }
+                catch (WebException)
+                {
+                    resultData.DataLength = 0;
+                }
+                
             }
             watch.Stop();
-            s.TimeTaken = watch.ElapsedMilliseconds;
-            s.Status = "Successfull";
+            resultData.Status = resultData.DataLength > 0 ? "Success" : "Fail";
+            resultData.TimeTaken = watch.ElapsedMilliseconds;
+            r.Report(resultData);
         }
     }
 }

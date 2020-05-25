@@ -7,8 +7,7 @@ namespace async.ViewModels.Interfaces
 {
     public interface IBaseViewModel
     {
-        public long TotalTime { get; set; }
         public string Title { get; set; }
-        public ObservableCollection<WebsiteData> WebsiteDatas { get; set; }
+        public ObservableCollection<string> Urls { get; set; }
     }
 }

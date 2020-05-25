@@ -21,62 +21,40 @@ namespace async.ViewModels
             set => SetProperty(ref title, value);
         }
 
-        private long totalTime;
+        public ObservableCollection<string> Urls { get; set; }
 
-        public long TotalTime
+        public ObservableCollection<ResultDataViewModel> ResultDataViewModels { get; set; }
+
+        public ICommand GetDataCommand => new RelayCommand(prop => GetData(prop));
+        public ICommand ClearResultsCommand => new RelayCommand(prop => ClearResults());
+        public ICommand StopAllCommand => new RelayCommand(prop => StopAll());
+
+        private void StopAll()
         {
-            get => totalTime;
-            set => SetProperty(ref totalTime, value);
-        }
-
-        private int percentageCompleted;
-
-        public int PercentageCompleted
-        {
-            get => percentageCompleted;
-            set => SetProperty(ref percentageCompleted, value);
-        }
-
-        public ObservableCollection<WebsiteData> WebsiteDatas { get; set; }
-
-        public ICommand GetDataCommand => new RelayCommand(prop => GetData(prop), cp => cancellationToken == null);
-
-        public ICommand CancelCommand => new RelayCommand(prop => Cancel(prop), cp => cancellationToken != null);
-
-        private void Cancel(object prop)
-        {
-            cancellationToken.Cancel();
-        }
-
-        private void GetData(object prop)
-        {
-            cancellationToken = new CancellationTokenSource();
-            Stopwatch topwatch = Stopwatch.StartNew();
-            int i = 1;
-
-            try
+            foreach (ResultDataViewModel rvm in ResultDataViewModels)
             {
-                foreach (WebsiteData s in WebsiteDatas)
-                {
-                    WebSites.Download(s, cancellationToken.Token);
-                    PercentageCompleted = (i * 100) / WebsiteDatas.Count;
-                    i++;
-                }
+                rvm.CancelCommand.Execute(null);
             }
-            catch (OperationCanceledException)
-            {
-                //Do nothing
-            }
-            
-            topwatch.Stop();
-            TotalTime = topwatch.ElapsedMilliseconds;
-            cancellationToken = null;
+        }
+
+        private void ClearResults()
+        {
+            StopAll();
+            ResultDataViewModels.Clear();
+        }
+
+        protected virtual void GetData(object prop)
+        {
+            ResultDataViewModel rdvm = new ResultDataViewModel();
+            ResultDataViewModels.Add(rdvm);
+            rdvm.GetResults(Urls);
         }
 
         public NormalViewModel()
         {
             Title = "Normal";
             WebSites.FillCollection(this);
+            ResultDataViewModels = new ObservableCollection<ResultDataViewModel>();
         }
     }
 }

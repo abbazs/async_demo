@@ -17,28 +17,35 @@
     </Window.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto">
-        <DockPanel LastChildFill="False"
-                   HorizontalAlignment="Center">
+        <Grid HorizontalAlignment="Center"
+              VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
             <ContentPresenter Content="{StaticResource nvm}"
                               ContentTemplate="{StaticResource ViewTemplate}"
-                              DockPanel.Dock="Left"
+                              Grid.Column="0"
                               />
             <ContentPresenter Content="{StaticResource avm}"
                               ContentTemplate="{StaticResource ViewTemplate}"
-                              DockPanel.Dock="Left"
+                              Grid.Column="1"
                               />
             <ContentPresenter Content="{StaticResource pavm}"
                               ContentTemplate="{StaticResource ViewTemplate}"
-                              DockPanel.Dock="Left"
-                              />        
+                              Grid.Column="2"
+                              />
             <ContentPresenter Content="{StaticResource pfvm}"
                               ContentTemplate="{StaticResource ViewTemplate}"
-                              DockPanel.Dock="Left"
-                              />        
+                              Grid.Column="3"
+                              />
             <ContentPresenter Content="{StaticResource apfvm}"
                               ContentTemplate="{StaticResource ViewTemplate}"
-                              DockPanel.Dock="Left"
+                              Grid.Column="4"
                               />
-        </DockPanel>
+        </Grid>
     </ScrollViewer>
 </Window>
