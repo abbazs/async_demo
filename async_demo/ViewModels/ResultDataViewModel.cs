@@ -71,6 +71,57 @@ namespace async.ViewModels
             cancellationToken = null;
         }
 
+        public async Task GetResultsAsync(ObservableCollection<string> vs)
+        {
+            total_count = vs.Count;
+            cancellationToken = new CancellationTokenSource();
+            Stopwatch topwatch = Stopwatch.StartNew();
+            Progress<ResultData> progress = new Progress<ResultData>();
+            progress.ProgressChanged += Progress_ProgressChanged;
+            try
+            {
+                foreach (string s in vs)
+                {
+                    await Task.Run(() => WebSites.Download(progress, s, cancellationToken.Token));
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing
+            }
+
+            topwatch.Stop();
+            TotalTime = topwatch.ElapsedMilliseconds;
+            cancellationToken = null;
+        }
+
+        public async Task GetResultsParallelAsync(ObservableCollection<string> vs)
+        {
+            total_count = vs.Count;
+            cancellationToken = new CancellationTokenSource();
+            Stopwatch topwatch = Stopwatch.StartNew();
+            List<Task> tasks = new List<Task>();
+            Progress<ResultData> progress = new Progress<ResultData>();
+            progress.ProgressChanged += Progress_ProgressChanged;
+
+            foreach (string s in vs)
+            {
+                tasks.Add(Task.Run(() => WebSites.Download(progress, s, cancellationToken.Token)));
+            }
+
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch (OperationCanceledException)
+            {
+                // Do nothing
+            }
+
+            TotalTime = topwatch.ElapsedMilliseconds;
+            cancellationToken = null;
+        }
+
         public void GetResultsParallelForeach(ObservableCollection<string> vs)
         {
             total_count = vs.Count;
@@ -120,57 +171,6 @@ namespace async.ViewModels
 
 
             topwatch.Stop();
-            TotalTime = topwatch.ElapsedMilliseconds;
-            cancellationToken = null;
-        }
-
-        public async Task GetResultsAsync(ObservableCollection<string> vs)
-        {
-            total_count = vs.Count;
-            cancellationToken = new CancellationTokenSource();
-            Stopwatch topwatch = Stopwatch.StartNew();
-            Progress<ResultData> progress = new Progress<ResultData>();
-            progress.ProgressChanged += Progress_ProgressChanged;
-            try
-            {
-                foreach (string s in vs)
-                {
-                    await Task.Run(() => WebSites.Download(progress, s, cancellationToken.Token));
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                //Do nothing
-            }
-
-            topwatch.Stop();
-            TotalTime = topwatch.ElapsedMilliseconds;
-            cancellationToken = null;
-        }
-
-        public async Task GetResultsParallelAsync(ObservableCollection<string> vs)
-        {
-            total_count = vs.Count;
-            cancellationToken = new CancellationTokenSource();
-            Stopwatch topwatch = Stopwatch.StartNew();
-            List<Task> tasks = new List<Task>();
-            Progress<ResultData> progress = new Progress<ResultData>();
-            progress.ProgressChanged += Progress_ProgressChanged;
-
-            foreach (string s in vs)
-            {
-                tasks.Add(Task.Run(() => WebSites.Download(progress, s, cancellationToken.Token)));
-            }
-
-            try
-            {
-                await Task.WhenAll(tasks);
-            }
-            catch (OperationCanceledException)
-            {
-                // Do nothing
-            }
-
             TotalTime = topwatch.ElapsedMilliseconds;
             cancellationToken = null;
         }
