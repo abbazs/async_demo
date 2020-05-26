@@ -1,16 +1,4 @@
-﻿using async.Helpers;
-using async.Models;
-using async.MVVMHelpers;
-using async.ViewModels.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
-namespace async.ViewModels
+﻿namespace async.ViewModels
 {
     public class AsyncParallelViewModel : NormalViewModel
     {
