@@ -12,7 +12,6 @@ namespace async.ViewModels
 {
     public class NormalViewModel : ObservableObject, IBaseViewModel
     {
-        private CancellationTokenSource cancellationToken;
         private string title;
 
         public string Title
